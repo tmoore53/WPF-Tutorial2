@@ -16,8 +16,6 @@ using System.Windows.Shapes;
 
 namespace WpfAppTreeViewProjectTutorial2
 {
-    ///At the 42:00 minute mark in the video.
-    
 
     
     /// <summary>
@@ -61,9 +59,13 @@ namespace WpfAppTreeViewProjectTutorial2
             }
 
         }
+        #endregion
+
+        #region Expanded folder
 
         private void Folder_Expanded(object sender, RoutedEventArgs e)
         {
+            #region Initial checks
             var item = (TreeViewItem)sender;
 
             //If the item only contains the empty data
@@ -76,7 +78,11 @@ namespace WpfAppTreeViewProjectTutorial2
             //Get the path.
             var fullpath = (string)item.Tag;
 
-            //Create a empty list.
+            #endregion
+
+            #region Get folders
+
+            //Create a empty list for directories.
             var directories = new List<string>();
 
 
@@ -117,12 +123,60 @@ namespace WpfAppTreeViewProjectTutorial2
                 //Add this subItem to the parent Item
                 item.Items.Add(subItem);
 
+                
+
             });
+
+            #endregion
+
+            #region Get files
+            //Create a empty list for files.
+            var files = new List<string>();
+
+
+            //Try and get files from the folder
+            //Ignoring any errors.
+            try
+            {
+                var fls = Directory.GetFiles(fullpath);
+
+                if (fls.Length > 0)
+                {
+                    files.AddRange(fls);
+
+                }
+            }
+            catch (Exception)
+            { }
+
+            //
+            files.ForEach(filePath =>
+            {
+                //Create a file item. 
+                var subItem = new TreeViewItem()
+                {
+                    //Set the header and tag.
+                    Header = GetFileFolderName(filePath),
+                    Tag = filePath
+
+                };
+
+
+
+                //Add this subItem to the parent Item
+                item.Items.Add(subItem);
+
+
+
+            });
+
+            #endregion
 
 
         }
 
         #endregion
+
         /// <summary>
         /// Find the folder name from path
         /// </summary>
